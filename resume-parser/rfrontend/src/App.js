@@ -69,7 +69,9 @@ function App() {
           <pre>{result}</pre>
         </div>
       )}
-
+     <footer>
+      <p>Created Using Flask and React</p>
+       <footer/>
     </div>
   );
 }
