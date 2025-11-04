@@ -71,7 +71,7 @@ function App() {
       )}
      <footer>
       <p>Created Using Flask and React</p>
-       <footer/>
+       </footer>
     </div>
   );
 }
