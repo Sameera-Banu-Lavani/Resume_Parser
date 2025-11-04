@@ -1,5 +1,0 @@
-﻿Flask
-spacy
-PyPDF2
-openai
-flask-cors
