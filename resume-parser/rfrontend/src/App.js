@@ -70,9 +70,6 @@ function App() {
         </div>
       )}
 
-      <footer>
-        <p>Made with ❤️ using Flask + React</p>
-      </footer>
     </div>
   );
 }
