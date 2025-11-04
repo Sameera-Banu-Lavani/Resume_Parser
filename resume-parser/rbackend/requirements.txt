@@ -1,5 +1,6 @@
 flask
 flask-cors
 spacy
+openai
 PyPDF2
 gunicorn
