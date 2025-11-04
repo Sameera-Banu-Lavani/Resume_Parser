@@ -1,5 +1,0 @@
-flask
-flask-cors
-spacy
-PyPDF2
-gunicorn
