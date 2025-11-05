@@ -29,7 +29,7 @@ function App() {
     setResult("");
 
     try {
-      const response = await fetch(`${API_URL}/extract_skills`, {
+      const response = await fetch(`${https://resume-parser-backend-i8qf.onrender.com/}/extract_skills`, {
         method: "POST",
         body: formData,
       });
