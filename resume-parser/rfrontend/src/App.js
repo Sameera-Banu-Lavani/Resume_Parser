@@ -7,8 +7,6 @@ function App() {
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
 
-  
-
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     setResult("");
@@ -29,11 +27,13 @@ function App() {
     setResult("");
 
     try {
-      const response = await fetch("https://resume-parser-backend-i8qf.onrender.com/extract_skills", {
-  method: "POST",
-  body: formData,
-});
-[
+      const response = await fetch(
+        "https://resume-parser-backend-i8qf.onrender.com/extract_skills",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to extract data from resume.");
@@ -70,9 +70,10 @@ function App() {
           <pre>{result}</pre>
         </div>
       )}
-     <footer>
-      <p>Created Using Flask and React</p>
-       </footer>
+
+      <footer>
+        <p>Created Using Flask and React</p>
+      </footer>
     </div>
   );
 }
