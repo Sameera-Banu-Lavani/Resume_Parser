@@ -12,11 +12,14 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 def extract_text_from_pdf(pdf_file):
-    pdf_reader = PyPDF2.PdfReader(pdf_file)
-    text = ""
-    for page in pdf_reader.pages:
-        text += page.extract_text() or ""
-    return text
+    try:
+        reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text() or ""
+        return text
+    except Exception as e:
+        return f"Error reading PDF: {str(e)}"
 
 @app.route('/')
 def home():
@@ -31,16 +34,19 @@ def extract_skills():
         pdf_file = request.files['file']
         text = extract_text_from_pdf(pdf_file)
 
-        if not text.strip():
-            return jsonify({"error": "No text found in the PDF."}), 400
+        if text.startswith("Error reading PDF"):
+            return jsonify({"error": text}), 400
 
-        # ✅ Use OpenAI API to extract structured data
+        if not OPENAI_API_KEY:
+            return jsonify({"error": "Missing OPENAI_API_KEY"}), 500
+
+        # ✅ Prompt for OpenAI
         prompt = f"""
-        Extract the following details from this resume:
-        - Full Name
+        Extract the following details from this resume and return JSON:
+        - Name
         - Email
         - Phone
-        - Key Skills (list)
+        - Skills
         Resume Text:
         {text}
         """
@@ -50,9 +56,8 @@ def extract_skills():
             input=prompt
         )
 
-        result_text = response.output_text
-
-        return jsonify({"skills": result_text})
+        output = response.output_text
+        return jsonify({"result": output})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
