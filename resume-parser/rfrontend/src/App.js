@@ -7,7 +7,7 @@ function App() {
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
 
-  const API_URL = process.env.REACT_APP_API_URL;
+  
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -29,10 +29,11 @@ function App() {
     setResult("");
 
     try {
-      const response = await fetch(`${https://resume-parser-backend-i8qf.onrender.com/}/extract_skills`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch("https://resume-parser-backend-i8qf.onrender.com/extract_skills", {
+  method: "POST",
+  body: formData,
+});
+[
 
       if (!response.ok) {
         throw new Error("Failed to extract data from resume.");
