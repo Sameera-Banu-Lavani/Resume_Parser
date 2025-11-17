@@ -56,10 +56,7 @@ def extract_skills():
             "name": "",
             "email": "",
             "phone": "",
-            "skills": [],
-            "education": "",
-            "experience": "",
-            "projects": ""
+            "skills": []
         }}
 
         Resume Text:
