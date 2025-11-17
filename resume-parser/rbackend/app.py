@@ -2,23 +2,23 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import PyPDF2
-import json
 from openai import OpenAI
 
 app = Flask(__name__)
 CORS(app)
 
-# Load API Key
+# Load API key
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY)
-
 
 def extract_text_from_pdf(pdf_file):
     try:
         reader = PyPDF2.PdfReader(pdf_file)
         text = ""
         for page in reader.pages:
-            text += page.extract_text() or ""
+            extracted = page.extract_text()
+            if extracted:
+                text += extracted
         return text
     except Exception as e:
         return f"Error reading PDF: {str(e)}"
@@ -44,20 +44,20 @@ def extract_skills():
         if not OPENAI_API_KEY:
             return jsonify({"error": "Missing OPENAI_API_KEY"}), 500
 
-        # ------------------------------
-        #      OPENAI SYSTEM PROMPT
-        # ------------------------------
+        # STRICT JSON OUTPUT
         prompt = f"""
-        Extract the following fields from the resume text below.
-        Return ONLY a valid JSON object. No explanations.
+        You are an advanced resume parser.
+        Extract the following fields from the resume text.
+        Respond ONLY in valid JSON. No explanation. No extra text.
 
-        Required JSON format:
-        {{
-            "name": "",
-            "email": "",
-            "phone": "",
-            "skills": []
-        }}
+        Required Fields:
+        - name
+        - email
+        - phone
+        - skills
+        - education
+        - experience
+        - projects
 
         Resume Text:
         {text}
@@ -65,30 +65,14 @@ def extract_skills():
 
         response = client.responses.create(
             model="gpt-4.1-mini",
-            input=prompt
+            input=prompt,
+            response_format={"type": "json_object"}   # 🔥 Forces JSON output
         )
 
-        # Raw text returned by OpenAI
-        output_text = response.output_text.strip()
+        # Extract JSON output
+        final_json = response.output_text
 
-        # ----------------------------------------------------
-        #  FIX: Convert OpenAI's JSON string → Python dict
-        # ----------------------------------------------------
-        try:
-            extracted_json = json.loads(output_text)   # Clean JSON
-        except json.JSONDecodeError:
-            # In case the model adds extra text, try to extract JSON substring
-            import re
-            json_match = re.search(r"\{.*\}", output_text, re.DOTALL)
-            if json_match:
-                extracted_json = json.loads(json_match.group(0))
-            else:
-                return jsonify({
-                    "error": "Failed to parse JSON from OpenAI response",
-                    "raw_output": output_text
-                }), 500
-
-        return jsonify(extracted_json)   # CLEAN JSON RESPONSE
+        return jsonify({"result": final_json})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
