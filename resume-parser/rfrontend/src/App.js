@@ -65,15 +65,14 @@ function App() {
 
       const data = await response.json();
 
-      if (
-        !data ||
-        (!data.skills && !data.summary && Object.keys(data).length === 0)
-      ) {
-        setError("No skills or data could be extracted from the resume.");
+      if (!data || Object.keys(data).length === 0) {
+        setError("No data could be extracted from the resume.");
         return;
       }
 
-      setResult(data.skills || data.summary || JSON.stringify(data, null, 2));
+      // ✅ Show entire JSON output (name, email, phone, skills)
+      setResult(JSON.stringify(data, null, 2));
+
     } catch (err) {
       console.error("Upload error:", err);
       setError(err.message || "Something went wrong. Please try again.");
@@ -86,7 +85,7 @@ function App() {
     <div className="App">
       <header className="header">
         <h1>📄 Resume Parser</h1>
-        <p>Upload your resume and extract skills automatically.</p>
+        <p>Upload your resume and extract details automatically.</p>
       </header>
 
       <div className="upload-section">
@@ -112,7 +111,7 @@ function App() {
           aria-label={
             loading
               ? "Processing resume"
-              : "Upload and extract skills from resume"
+              : "Upload and extract data from resume"
           }
         >
           {loading ? "Processing..." : "Upload & Extract"}
@@ -131,8 +130,8 @@ function App() {
           role="region"
           aria-labelledby="result-title"
         >
-          <h3 id="result-title">Extracted Skills:</h3>
-          <pre aria-label="Extracted skills data">{result}</pre>
+          <h3 id="result-title">Extracted Details:</h3>
+          <pre aria-label="Extracted data">{result}</pre>
         </div>
       )}
 
